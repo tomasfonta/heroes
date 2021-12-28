@@ -2,7 +2,6 @@ package com.tomasfonta.heroes.mapper;
 
 import com.tomasfonta.heroes.model.Hero;
 import com.tomasfonta.heroes.model.dto.HeroDto;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +34,23 @@ class HeroMapperTest {
     }
 
     @Test
+    void IncorrectHeroToHeroDto() {
+        Hero hero = new Hero();
+
+        HeroDto heroMapped = heroMapper.heroToHeroDto(hero);
+
+        assertThat(heroMapped.getId()).isNull();
+        assertThat(heroMapped.getName()).isNull();
+        assertThat(heroMapped.getSlug()).isNull();
+    }
+
+    @Test
+    void NullHeroToHeroDto() {
+        HeroDto heroMapped = heroMapper.heroToHeroDto((Hero) null);
+        assertThat(heroMapped).isNull();
+    }
+
+    @Test
     void CorrectHeroToHeroDtoList() {
         List<Hero> heroesList = generateHeroList();
 
@@ -46,7 +62,7 @@ class HeroMapperTest {
     }
 
     @Test
-    void IncorrectHeroToHeroDtoList() {
+    void EmptyHeroToHeroDtoList() {
         List<Hero> heroesList = Collections.emptyList();
 
         List<HeroDto> heroDtoList = heroMapper.heroToHeroDto(heroesList);
@@ -56,14 +72,9 @@ class HeroMapperTest {
     }
 
     @Test
-    void IncorrectHeroToHeroDto() {
-        Hero hero = new Hero();
-
-        HeroDto heroMapped = heroMapper.heroToHeroDto(hero);
-
-        assertThat(heroMapped.getId()).isNull();
-        assertThat(heroMapped.getName()).isNull();
-        assertThat(heroMapped.getSlug()).isNull();
+    void NullHeroToHeroDtoList() {
+        List<HeroDto> heroDtoList = heroMapper.heroToHeroDto((List<Hero>) null);
+        assertThat(heroDtoList).isNull();
     }
 
     @Test
@@ -78,7 +89,7 @@ class HeroMapperTest {
     }
 
     @Test
-    void IncorrectTHeroToHeroDto() {
+    void IncorrectTHeroDtoToHero() {
         HeroDto heroDto = new HeroDto();
 
         Hero hero = heroMapper.heroDtoHero(heroDto);
@@ -86,6 +97,12 @@ class HeroMapperTest {
         assertThat(hero.getId()).isNull();
         assertThat(hero.getName()).isNull();
         assertThat(hero.getSlug()).isNull();
+    }
+
+    @Test
+    void NullHeroDtoToHero() {
+        Hero hero = heroMapper.heroDtoHero(null);
+        assertThat(hero).isNull();
     }
 
     private HeroDto generateHeroDto() {

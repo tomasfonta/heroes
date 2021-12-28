@@ -52,7 +52,7 @@ public class HeroService {
         return hero.map(h -> heroMapper.heroToHeroDto(h));
     }
 
-    public List<HeroDto> findByNameContainingIgnoreCase(String heroName) throws HeroNotFoudException {
+    public List<HeroDto> findByNameContainingIgnoreCase(String heroName) {
         return heroMapper.heroToHeroDto(heroRepository.findByNameContainingIgnoreCase(heroName));
     }
 }
