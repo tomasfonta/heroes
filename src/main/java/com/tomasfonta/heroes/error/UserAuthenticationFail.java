@@ -1,6 +1,8 @@
 package com.tomasfonta.heroes.error;
 
-public class UserAuthenticationFail extends RuntimeException {
+import org.springframework.security.core.AuthenticationException;
+
+public class UserAuthenticationFail extends AuthenticationException {
 
     public UserAuthenticationFail(String message) {
         super(message);

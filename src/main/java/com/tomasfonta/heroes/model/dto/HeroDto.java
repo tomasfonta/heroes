@@ -16,7 +16,6 @@ import javax.validation.constraints.Size;
 public class HeroDto {
     @Nullable
     public  Long id;
-
     @NotBlank
     @NotNull
     @Size(min = 1, max = 50)

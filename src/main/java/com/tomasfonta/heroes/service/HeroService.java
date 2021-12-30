@@ -1,15 +1,18 @@
 package com.tomasfonta.heroes.service;
 
-import com.tomasfonta.heroes.error.HeroNotFoudException;
+import com.tomasfonta.heroes.error.HeroNotFoundException;
+import com.tomasfonta.heroes.error.ValidationException;
+import com.tomasfonta.heroes.error.ValidationType;
 import com.tomasfonta.heroes.mapper.HeroMapper;
 import com.tomasfonta.heroes.model.Hero;
 import com.tomasfonta.heroes.model.dto.HeroDto;
 import com.tomasfonta.heroes.repository.HeroRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,20 +29,27 @@ public class HeroService {
     public List<HeroDto> getAll() {
         return heroRepository.findAll()
                 .stream()
-                .map(hero -> heroMapper.heroToHeroDto(hero))
+                .map(heroMapper::heroToHeroDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public HeroDto updateHero(HeroDto heroDto) throws HeroNotFoudException {
-        Hero hero = heroRepository.findById(heroDto.getId()).orElseThrow(() -> new HeroNotFoudException());
+    public HeroDto updateHero(HeroDto heroDto) throws HeroNotFoundException {
+        if (heroDto == null || heroDto.getId() == null) {
+            throw new ValidationException(ValidationType.BADREQUEST, HttpStatus.BAD_REQUEST, "Missing UserId Parameter.");
+        }
+        Hero hero = heroRepository.findById(heroDto.getId())
+                .orElseThrow(() -> new HeroNotFoundException(
+                        String.format("User with ID: %s Not Found.", heroDto.getId())));
         hero.setName(heroDto.getName());
         hero.setSlug(heroDto.getSlug());
         return heroMapper.heroToHeroDto(hero);
     }
 
-    public void removeHero(Long heroId) throws HeroNotFoudException {
-        Hero hero = heroRepository.findById(heroId).orElseThrow(() -> new HeroNotFoudException());
+    public void removeHero(Long heroId) throws HeroNotFoundException {
+        Hero hero = heroRepository.findById(heroId)
+                .orElseThrow(() -> new HeroNotFoundException(
+                        String.format("User with ID: %s Not Found.", heroId)));
         heroRepository.delete(hero);
     }
 
@@ -47,12 +57,13 @@ public class HeroService {
         return heroMapper.heroToHeroDto(heroRepository.save(heroMapper.heroDtoHero(heroDto)));
     }
 
-    public Optional<HeroDto> findById(Long id) {
-        Optional<Hero> hero = heroRepository.findById(id);
-        return hero.map(h -> heroMapper.heroToHeroDto(h));
+    public HeroDto findById(Long id) throws HeroNotFoundException {
+        Hero hero = heroRepository.findById(id)
+                .orElseThrow(() -> new HeroNotFoundException(String.format("Hero with Id:%s Not Found.", id)));
+        return heroMapper.heroToHeroDto(hero);
     }
 
-    public List<HeroDto> findByNameContainingIgnoreCase(String heroName) {
+    public List<HeroDto> findByNameContainingIgnoreCase(@NotNull String heroName) {
         return heroMapper.heroToHeroDto(heroRepository.findByNameContainingIgnoreCase(heroName));
     }
 }

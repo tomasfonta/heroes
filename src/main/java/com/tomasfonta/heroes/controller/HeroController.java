@@ -1,30 +1,37 @@
 package com.tomasfonta.heroes.controller;
 
-import com.tomasfonta.heroes.error.HeroNotFoudException;
+import com.tomasfonta.heroes.error.HeroNotFoundException;
 import com.tomasfonta.heroes.model.dto.HeroDto;
 import com.tomasfonta.heroes.service.HeroService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@Slf4j
+@RestController
 @RequestMapping("/api/heroes")
+@Slf4j
+@RequiredArgsConstructor
 public class HeroController {
 
     private final HeroService heroService;
 
-    public HeroController(HeroService heroService) {
-        this.heroService = heroService;
-    }
-
     @GetMapping("/")
     @PreAuthorize("hasAuthority('HERO_READ')")
+    @Operation(summary = "Get All Heroes")
+    @ApiResponse(responseCode = "200", description = "Found Heroes",
+            content = {@Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = HeroDto.class)))})
     public ResponseEntity<List<HeroDto>> getAll() {
         log.info(" ------------ getAll Heroes ------------ ");
         return new ResponseEntity(heroService.getAll(), HttpStatus.OK);
@@ -32,6 +39,10 @@ public class HeroController {
 
     @PostMapping("/")
     @PreAuthorize("hasAuthority('HERO_CREATE')")
+    @Operation(summary = "Save New Hero")
+    @ApiResponse(responseCode = "200", description = "Hero Created",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = HeroDto.class))})
     public ResponseEntity<HeroDto> createHero(@RequestBody HeroDto heroDto) {
         log.info(" ------------ create Hero ------------ ");
         return ResponseEntity.ok(heroService.create(heroDto));
@@ -39,15 +50,28 @@ public class HeroController {
 
     @PutMapping("/")
     @PreAuthorize("hasAuthority('HERO_UPDATE')")
+    @Operation(summary = "Update Hero")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Hero Updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = HeroDto.class))}),
+            @ApiResponse(responseCode = "404", description = "Hero Not Found",
+                    content = @Content)})
     public ResponseEntity<HeroDto> updateHero(
-            @RequestBody HeroDto heroDto) throws HeroNotFoudException {
+            @RequestBody HeroDto heroDto) throws HeroNotFoundException {
         log.info(" ------------ update Hero ------------ ");
         return ResponseEntity.ok(heroService.updateHero(heroDto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('HERO_DELETE')")
-    public ResponseEntity removeHero(@PathVariable Long id) throws HeroNotFoudException {
+    @Operation(summary = "Remove Hero")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Hero Removed",
+                    content = {@Content}),
+            @ApiResponse(responseCode = "404", description = "Hero Not Found",
+                    content = @Content)})
+    public ResponseEntity removeHero(@PathVariable Long id) throws HeroNotFoundException {
         log.info(" ------------ remove Hero ------------ ");
         heroService.removeHero(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -55,22 +79,34 @@ public class HeroController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('HERO_READ')")
-    public ResponseEntity<HeroDto> getHeroById(@PathVariable Long id) throws HeroNotFoudException {
+    @Operation(summary = "Get Hero By Id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Hero Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = HeroDto.class))),
+            @ApiResponse(responseCode = "404", description = "Hero Not Found",
+                    content = @Content)})
+    public ResponseEntity<HeroDto> getHeroById(@PathVariable Long id)
+            throws HeroNotFoundException {
         log.info(" ------------ getHeroById ------------ ");
-        return ResponseEntity.ok(
-                heroService.findById(id)
-                        .orElseThrow(() -> new HeroNotFoudException()));
+        return ResponseEntity.ok(heroService.findById(id));
+
     }
 
     @GetMapping("/searchByName/{name}")
     @PreAuthorize("hasAuthority('HERO_READ')")
+    @Operation(summary = "Search Hero by containing Name",
+            description = "This request will return all heroes that contain " +
+                    "the search parameter in his name, note that the search will " +
+                    "IGNORE CASE of the search parameter and the hero name.")
+    @ApiResponse(responseCode = "200",
+            description = "Hero Found",
+            content = {@Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = HeroDto.class)))})
     public ResponseEntity<List<HeroDto>> findHeroByNameContainingIgnoreCase(
-            @PathVariable String name) throws HeroNotFoudException {
+            @PathVariable String name) {
         log.info(" ------------ findHeroByNameContaining ------------ ");
-        return ResponseEntity.ok(
-                heroService.findByNameContainingIgnoreCase(name));
-
-
+        return ResponseEntity.ok(heroService.findByNameContainingIgnoreCase(name));
     }
 
 }

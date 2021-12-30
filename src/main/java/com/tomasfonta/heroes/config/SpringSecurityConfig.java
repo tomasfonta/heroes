@@ -14,12 +14,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final JwtUserAuthenticationFilter jwtUserAuthenticationFilter;
     private final JwtConfig jwtConfig;
 
-    public SpringSecurityConfig(JwtUserAuthenticationFilter jwtUserAuthenticationFilter,
-                                JwtConfig jwtConfig) {
-        this.jwtUserAuthenticationFilter = jwtUserAuthenticationFilter;
+    public SpringSecurityConfig(JwtConfig jwtConfig) {
         this.jwtConfig = jwtConfig;
     }
 

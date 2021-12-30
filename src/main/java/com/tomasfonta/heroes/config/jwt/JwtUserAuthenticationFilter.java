@@ -14,7 +14,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -32,7 +31,6 @@ public class JwtUserAuthenticationFilter extends UsernamePasswordAuthenticationF
         super.setAuthenticationManager(authenticationManager);
         this.jwtConfig = jwtConfig;
     }
-
 
     @Autowired
     @Override

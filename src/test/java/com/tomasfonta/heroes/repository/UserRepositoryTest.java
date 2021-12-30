@@ -38,7 +38,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void itShoulNotFindByNameContainingIgnoreCase() {
+    void itShouldNotFindByNameContainingIgnoreCase() {
         Optional<User> expected = userRepository.findUserByName("NonExistingName");
         assertThat(expected).isEmpty();
         assertThat(expected).isNotPresent();

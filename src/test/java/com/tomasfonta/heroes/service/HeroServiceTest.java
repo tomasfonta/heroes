@@ -1,6 +1,7 @@
 package com.tomasfonta.heroes.service;
 
-import com.tomasfonta.heroes.error.HeroNotFoudException;
+import com.tomasfonta.heroes.error.HeroNotFoundException;
+import com.tomasfonta.heroes.error.ValidationException;
 import com.tomasfonta.heroes.mapper.HeroMapper;
 import com.tomasfonta.heroes.mapper.HeroMapperImpl;
 import com.tomasfonta.heroes.model.Hero;
@@ -18,8 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,7 +71,7 @@ class HeroServiceTest {
     }
 
     @Test
-    void updateHero() throws HeroNotFoudException {
+    void updateHero() throws HeroNotFoundException {
         final Long id = Long.valueOf(1);
         Hero hero = generateHero();
         Hero heroChanged = Hero.builder()
@@ -97,12 +97,12 @@ class HeroServiceTest {
 
         when(heroRepository.findById(heroRequest.getId())).thenReturn(Optional.empty());
 
-        assertThatExceptionOfType(HeroNotFoudException.class)
+        assertThatExceptionOfType(HeroNotFoundException.class)
                 .isThrownBy(() -> heroService.updateHero(heroRequest));
     }
 
     @Test
-    void removeHero() throws HeroNotFoudException {
+    void removeHero() throws HeroNotFoundException {
         Hero hero = generateHero();
         when(heroRepository.findById(hero.getId())).thenReturn(Optional.of(hero));
 
@@ -118,7 +118,7 @@ class HeroServiceTest {
     void HeroNotFoundRemoveHero() {
         when(heroRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThatExceptionOfType(HeroNotFoudException.class)
+        assertThatExceptionOfType(HeroNotFoundException.class)
                 .isThrownBy(() -> heroService.removeHero(1L));
     }
 
@@ -136,12 +136,24 @@ class HeroServiceTest {
     }
 
     @Test
-    void EmptyFindById() {
+    void EmptyFindById() throws HeroNotFoundException {
         Long id = Long.valueOf(1);
         when(heroRepository.findById(id)).thenReturn(Optional.empty());
 
-        Optional<HeroDto> heroFound = heroService.findById(id);
-        assertThat(heroFound).isEmpty();
+        assertThatExceptionOfType(HeroNotFoundException.class)
+                .isThrownBy(() -> heroService.findById(id));
+    }
+
+    @Test
+    void NullUserIdFindById() throws HeroNotFoundException {
+        assertThatExceptionOfType(ValidationException.class)
+                .isThrownBy(() -> heroService.findById(null));
+    }
+
+    @Test
+    void NullUserIdUpdateHero() throws HeroNotFoundException {
+        assertThatExceptionOfType(ValidationException.class)
+                .isThrownBy(() -> heroService.updateHero(null));
     }
 
     @Test
