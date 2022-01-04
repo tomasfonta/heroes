@@ -1,5 +1,6 @@
 package com.tomasfonta.heroes.model;
 
+import com.fasterxml.jackson.databind.jsonschema.JsonSerializableSchema;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import javax.validation.constraints.Size;
 @Builder
 @Data
 @EqualsAndHashCode
+@JsonSerializableSchema
 @Table( name= "heroes")
 public class Hero {
 

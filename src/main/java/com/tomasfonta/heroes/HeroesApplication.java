@@ -2,17 +2,18 @@ package com.tomasfonta.heroes;
 
 import com.tomasfonta.heroes.config.security.ApplicationRoles;
 import com.tomasfonta.heroes.model.User;
-import com.tomasfonta.heroes.repository.HeroRepository;
 import com.tomasfonta.heroes.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
+@EnableCaching
 @SpringBootApplication
 public class HeroesApplication {
 
@@ -21,8 +22,7 @@ public class HeroesApplication {
     }
 
     @Bean
-    CommandLineRunner runner(HeroRepository heroRepository,
-                             UserRepository userRepository) {
+    CommandLineRunner runner(UserRepository userRepository) {
 
         return args -> {
 
