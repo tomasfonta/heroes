@@ -14,10 +14,11 @@ import javax.validation.constraints.Size;
 @Builder
 @Data
 @EqualsAndHashCode
+@Table( name= "heroes")
 public class Hero {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
     @NotBlank

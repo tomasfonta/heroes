@@ -1,7 +1,6 @@
 package com.tomasfonta.heroes;
 
 import com.tomasfonta.heroes.config.security.ApplicationRoles;
-import com.tomasfonta.heroes.model.Hero;
 import com.tomasfonta.heroes.model.User;
 import com.tomasfonta.heroes.repository.HeroRepository;
 import com.tomasfonta.heroes.repository.UserRepository;
@@ -27,18 +26,6 @@ public class HeroesApplication {
 
         return args -> {
 
-            Hero hero = Hero.builder()
-                    .name("Batman")
-                    .slug("Batman")
-                    .build();
-
-            Hero hero2 = Hero.builder()
-                    .name("Robin")
-                    .slug("Robin")
-                    .build();
-
-            heroRepository.saveAll(List.of(hero, hero2));
-
             PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
             User user = User.builder()
                     .password(encoder.encode("password"))
@@ -52,9 +39,7 @@ public class HeroesApplication {
                     .role(ApplicationRoles.ADMIN)
                     .build();
 
-            userRepository.save(admin);
-            userRepository.save(user);
-
+            userRepository.saveAll(List.of(admin, user));
         };
     }
 }
