@@ -15,7 +15,7 @@ public class ErrorHandler {
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ExceptionResponse> validationException(ValidationException e,
                                                                  WebRequest request) {
-        log.error(String.format(" ------- Error: %s, from Request: %s",
+        log.error(String.format(" :::::::::: Error: %s, from Request: %s ::::::::::",
                 e.getErrorMessage(), request.getContextPath()));
         ExceptionResponse exResponse = new ExceptionResponse();
         exResponse.setType(e.getValidationType());

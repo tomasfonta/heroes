@@ -1,4 +1,4 @@
-package com.tomasfonta.heroes.config;
+package com.tomasfonta.heroes.config.security;
 
 import com.tomasfonta.heroes.config.jwt.JwtUserAuthenticationFilter;
 import com.tomasfonta.heroes.config.security.JwtConfig;

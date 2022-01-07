@@ -8,7 +8,6 @@ import com.tomasfonta.heroes.mapper.HeroMapper;
 import com.tomasfonta.heroes.model.Hero;
 import com.tomasfonta.heroes.model.dto.HeroDto;
 import com.tomasfonta.heroes.repository.HeroRepository;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -45,7 +44,7 @@ public class HeroService {
         if (heroDto == null || heroDto.getId() == null) {
             throw new ValidationException(ValidationType.BADREQUEST, HttpStatus.BAD_REQUEST, "Missing UserId Parameter.");
         }
-        Hero hero = heroRepository.findByHeroId(heroDto.getId())
+        Hero hero = heroRepository.findById(heroDto.getId())
                 .orElseThrow(() -> new HeroNotFoundException(
                         String.format("User with ID: %s Not Found.", heroDto.getId())));
         hero.setName(heroDto.getName());
@@ -55,7 +54,7 @@ public class HeroService {
 
     @CacheEvict(cacheNames = RedisConfig.HERO_CACHE, key = "#heroId")
     public void removeHero(Long heroId) throws HeroNotFoundException {
-        Hero hero = heroRepository.findByHeroId(heroId)
+        Hero hero = heroRepository.findById(heroId)
                 .orElseThrow(() -> new HeroNotFoundException(
                         String.format("User with ID: %s Not Found.", heroId)));
         heroRepository.delete(hero);
@@ -67,7 +66,7 @@ public class HeroService {
 
     @Cacheable(cacheNames = RedisConfig.HERO_CACHE, unless = "#result == null")
     public HeroDto findById(Long id) throws HeroNotFoundException {
-        Hero hero = heroRepository.findByHeroId(id)
+        Hero hero = heroRepository.findById(id)
                 .orElseThrow(() -> new HeroNotFoundException(String.format("Hero with Id:%s Not Found.", id)));
         return heroMapper.heroToHeroDto(hero);
     }
