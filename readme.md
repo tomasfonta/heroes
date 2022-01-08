@@ -6,11 +6,10 @@ Technical Test Spring Boot.
 
 Docker:
 ```bash
-docker compose up
+mvn clean install && docker-compose up
 ```
 
 ## Usage
-
 ```java
 
 // Api documentation

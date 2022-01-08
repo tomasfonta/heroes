@@ -60,6 +60,7 @@ public class HeroService {
         heroRepository.delete(hero);
     }
 
+    @Transactional
     public HeroDto create(HeroDto heroDto) {
         return heroMapper.heroToHeroDto(heroRepository.save(heroMapper.heroDtoHero(heroDto)));
     }
@@ -74,4 +75,5 @@ public class HeroService {
     public List<HeroDto> findByNameContainingIgnoreCase(@NotNull String heroName) {
         return heroMapper.heroToHeroDto(heroRepository.findByNameContainingIgnoreCase(heroName));
     }
+
 }

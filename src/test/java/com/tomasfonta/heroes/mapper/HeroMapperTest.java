@@ -1,7 +1,9 @@
 package com.tomasfonta.heroes.mapper;
 
 import com.tomasfonta.heroes.model.Hero;
+import com.tomasfonta.heroes.model.PowerStat;
 import com.tomasfonta.heroes.model.dto.HeroDto;
+import com.tomasfonta.heroes.model.dto.PowerStatDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +26,7 @@ class HeroMapperTest {
 
     @Test
     void CorrectHeroToHeroDto() {
-        Hero hero = generateHero();
+        Hero hero = generateHero(1l, "Superman", "Superman");
 
         HeroDto heroDto = heroMapper.heroToHeroDto(hero);
 
@@ -58,7 +60,8 @@ class HeroMapperTest {
 
         assertThat(heroDtoList).isNotNull();
         assertThat(heroDtoList).isNotEmpty();
-        assertThat(heroDtoList).contains(generateHeroDto());
+        assertThat(heroDtoList).contains(generateHeroDto(1l, "Superman", "Super"));
+
     }
 
     @Test
@@ -79,7 +82,7 @@ class HeroMapperTest {
 
     @Test
     void CorrectHeroDtoHero() {
-        HeroDto heroDto = generateHeroDto();
+        HeroDto heroDto = generateHeroDto(1l, "Superman", "Super");
 
         Hero hero = heroMapper.heroDtoHero(heroDto);
 
@@ -105,32 +108,29 @@ class HeroMapperTest {
         assertThat(hero).isNull();
     }
 
-    private HeroDto generateHeroDto() {
+    private HeroDto generateHeroDto(Long id, String name, String slug) {
         return HeroDto.builder()
-                .id(1l)
-                .name("Superman")
-                .slug("Superman Slug")
+                .id(id)
+                .name(name)
+                .slug(slug)
+                .powerStats(List.of(new PowerStatDto(1L, "Power", 100, 1l)))
                 .build();
     }
 
-    private Hero generateHero() {
-        return Hero.builder()
-                .id(1l)
-                .name("Superman")
-                .slug("Superman Slug")
+    private Hero generateHero(Long id, String name, String slug) {
+        Hero hero = Hero.builder()
+                .id(id)
+                .name(name)
+                .slug(slug)
+                .powerStats(Collections.emptyList())
                 .build();
+
+        hero.setPowerStats(List.of(new PowerStat(id, "Power", 100, hero)));
+        return hero;
     }
 
     private List<Hero> generateHeroList() {
-        return List.of(Hero.builder()
-                        .id(1l)
-                        .name("Superman")
-                        .slug("Superman Slug")
-                        .build(),
-                Hero.builder()
-                        .id(2l)
-                        .name("Batman")
-                        .slug("Batman Slug")
-                        .build());
+        return List.of(generateHero(1l, "Superman", "Super"),
+                generateHero(2l, "SpiderMan", "Spider"));
     }
 }
