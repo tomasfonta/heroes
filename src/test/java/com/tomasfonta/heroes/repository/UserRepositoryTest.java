@@ -25,7 +25,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void itShouldFindByNameContainingIgnoreCase() {
+    void findByName() {
         User user = generateUser();
         userRepository.save(user);
         Optional<User> expected = userRepository.findUserByName(user.getName());
@@ -38,7 +38,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void itShouldNotFindByNameContainingIgnoreCase() {
+    void findByNonExisting() {
         Optional<User> expected = userRepository.findUserByName("NonExistingName");
         assertThat(expected).isEmpty();
         assertThat(expected).isNotPresent();

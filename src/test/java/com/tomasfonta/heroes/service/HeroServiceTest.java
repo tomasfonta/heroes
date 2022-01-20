@@ -9,6 +9,7 @@ import com.tomasfonta.heroes.model.PowerStat;
 import com.tomasfonta.heroes.model.dto.HeroDto;
 import com.tomasfonta.heroes.model.dto.PowerStatDto;
 import com.tomasfonta.heroes.repository.HeroRepository;
+import com.tomasfonta.heroes.repository.PowerStatRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +36,8 @@ class HeroServiceTest {
 
     @Mock
     private HeroRepository heroRepository;
+    @Mock
+    private PowerStatRepository powerStatRepository;
 
     @Spy
     private HeroMapper heroMapper = new HeroMapperImpl();
@@ -59,10 +63,26 @@ class HeroServiceTest {
 
     @Test
     void create() {
-        HeroDto heroDto = generateHeroDto();
+        Hero hero = generateHero();
+        PowerStat powerStat = new PowerStat(1l , "power" , 100 , hero);
+        hero.setPowerStats(List.of(powerStat));
+
+        HeroDto heroDto = new HeroDto();
+
+        PowerStatDto powerStatDto = new PowerStatDto();
+        powerStatDto.setName("PowerName");
+        powerStatDto.setLevel(10);
+
+        heroDto.setName("Test");
+        heroDto.setSlug("TestSlug");
+        heroDto.setPowerStats(List.of(powerStatDto));
+
+        when( powerStatRepository.save(any()))
+                .thenReturn(powerStat);
+        when( heroRepository.save(any()))
+                .thenReturn(hero);
 
         heroService.create(heroDto);
-
         ArgumentCaptor<Hero> heroArgumentCaptor =
                 ArgumentCaptor.forClass(Hero.class);
 
@@ -70,27 +90,28 @@ class HeroServiceTest {
         HeroDto heroDtoCaptured = heroMapper.heroToHeroDto(heroArgumentCaptor.getValue());
         assertThat(heroDto.getName()).isEqualTo(heroDtoCaptured.getName());
         assertThat(heroDto.getSlug()).isEqualTo(heroDtoCaptured.getSlug());
-        // TODO power stat mmapper compara power stats
     }
 
     @Test
     void updateHero() throws HeroNotFoundException {
         final Long id = Long.valueOf(1);
         Hero hero = generateHero();
+        PowerStat powerStat = new PowerStat(1l, "powe", 100 , hero);
         Hero heroChanged = Hero.builder()
                 .id(id)
                 .name("Superman Changed")
                 .slug("Super Changed")
                 .build();
-        heroChanged.setPowerStats(List.of(new PowerStat(1l, "name", 1, heroChanged)));
+        heroChanged.setPowerStats(List.of(powerStat));
         HeroDto heroRequest = HeroDto.builder()
                 .id(id)
                 .name("Superman Changed")
                 .slug("Super Changed")
-                .powerStats(List.of(new PowerStatDto(1l, "name", 1, id)))
+                .powerStats(List.of(heroMapper.powerStatToPowerStatDto(powerStat)))
                 .build();
 
         when(heroRepository.findById(id)).thenReturn(Optional.of(hero));
+        when(powerStatRepository.findById(1l)).thenReturn(Optional.of(powerStat));
 
         assertThat(heroService.updateHero(heroRequest))
                 .isEqualTo(heroMapper.heroToHeroDto(heroChanged));

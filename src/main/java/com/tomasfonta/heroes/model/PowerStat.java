@@ -1,20 +1,21 @@
 package com.tomasfonta.heroes.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.jsonschema.JsonSerializableSchema;
 import lombok.*;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name = "power_stats")
 @Data
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonSerializableSchema
-@EqualsAndHashCode
 @ToString
 @Getter
 @Setter
+@JsonSerializableSchema
+@Entity
+@Table(name = "power_stats")
 public class PowerStat {
 
     @Id
@@ -25,6 +26,7 @@ public class PowerStat {
 
     @ManyToOne
     @JoinColumn(name = "hero_id", nullable = false)
+    @JsonIgnore
     Hero hero;
 
 }

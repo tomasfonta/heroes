@@ -1,9 +1,8 @@
 package com.tomasfonta.heroes.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
-import java.util.Objects;
+import java.io.Serializable;
 
 @Getter
 @Setter
@@ -11,7 +10,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class PowerStatDto {
+
+public class PowerStatDto implements Serializable {
 
     public Long id;
     public String name;
